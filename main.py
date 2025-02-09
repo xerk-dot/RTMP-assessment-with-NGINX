@@ -21,23 +21,49 @@ def get_stream_info(rtmp_url):
 
 def print_stream_info(stream_info):
     output = []
-    for stream in stream_info.get('streams', []):
-        output.append(f"Stream Index: {stream.get('index')}")
-        output.append(f"Codec Name: {stream.get('codec_name')}")
-        output.append(f"Codec Type: {stream.get('codec_type')}")
-        if 'width' in stream and 'height' in stream:
-            output.append(f"Resolution: {stream['width']}x{stream['height']}")
-        if 'sample_rate' in stream:
-            output.append(f"Sample Rate: {stream['sample_rate']}")
-        if 'pix_fmt' in stream:
-            output.append(f"Pixel Format: {stream['pix_fmt']}")
-        output.append(f"Duration: {stream.get('duration')} seconds")
-        output.append(f"Bitrate: {stream.get('bit_rate')} bps")
-        output.append("-" * 30)
-    
+    with ui.card().classes('no-shadow border-[1px]'):
+        with ui.grid(columns=2):  # Create a grid layout for displaying stream info
+            for stream in stream_info.get('streams', []):
+                with ui.element('div').classes('p-2 bg-blue-300'):
+                    output.append(f"Stream Index: {stream.get('index')}")
+                    ui.label("Stream Index:").style('font-weight: bold')
+                with ui.element('div').classes('p-2 bg-blue-100'):
+                    output.append(f"{stream.get('index')}")
+                    ui.label(f"{stream.get('index')}")
+                output.append(f"Codec Name: {stream.get('codec_name')}")
+                ui.label("Codec Name:").style('font-weight: bold')
+                ui.label(f"{stream.get('codec_name')}")
+                output.append(f"Codec Type: {stream.get('codec_type')}")
+                ui.label("Codec Type:").style('font-weight: bold')
+                ui.label(f"{stream.get('codec_type')}")
+                if 'width' in stream and 'height' in stream:
+                    resolution = f"{stream['width']}x{stream['height']}"
+                    output.append(f"Resolution: {resolution}")
+                    ui.label("Resolution:").style('font-weight: bold')
+                    ui.label(f"{resolution}")
+                if 'sample_rate' in stream:
+                    output.append(f"Sample Rate: {stream['sample_rate']}")
+                    ui.label("Sample Rate:").style('font-weight: bold')
+                    ui.label(f"{stream['sample_rate']}")
+                if 'pix_fmt' in stream:
+                    output.append(f"Pixel Format: {stream['pix_fmt']}")
+                    ui.label("Pixel Format:").style('font-weight: bold')
+                    ui.label(f"{stream['pix_fmt']}")
+                output.append(f"Duration: {stream.get('duration')} seconds")
+                ui.label("Duration:").style('font-weight: bold')
+                ui.label(f"{stream.get('duration')} seconds")
+                output.append(f"Bitrate: {stream.get('bit_rate')} bps")
+                ui.label("Bitrate:").style('font-weight: bold')
+                ui.label(f"{stream.get('bit_rate')} bps")
+                output.append("-" * 30)
+
     # Join the output list into a single string
     return "\n".join(output)
 
+def update_stream_info(info):
+    stream_info_display.value = info
+
+# Update the analyze_stream function to use the new display
 def analyze_stream():
     rtmp_url = url_input.value
     print(f"Analyzing RTMP URL: {rtmp_url}")  # Debugging line
@@ -48,16 +74,21 @@ def analyze_stream():
     stream_info = get_stream_info(rtmp_url)
     print(f"Stream Info: {stream_info}")  # Debugging line
     if isinstance(stream_info, dict):
-        result_output.value = print_stream_info(stream_info)
+        update_stream_info(print_stream_info(stream_info))  # Update the detailed stream info display
     else:
         result_output.value = stream_info
 
+
 # UI Elements
-ui.label('RTMP Stream Diagnostics')
-url_input = ui.input('Enter the RTMP URL:')
-ui.button('Analyze Stream', on_click=analyze_stream)
+with ui.card().classes('no-shadow border-[1px]'):
 
-# Section to display stream stats
-result_output = ui.label('').style('white-space: pre-wrap;')  # Preserve formatting
+    ui.label('RTMP Stream Diagnostics').style('display: block; margin-left: auto; margin-right: auto;')
+    url_input = ui.input('Enter the RTMP URL:').style('display: block; margin-left: auto; margin-right: auto;')
+    ui.button('Analyze Stream', on_click=analyze_stream).style('display: block; margin-left: auto; margin-right: auto;')
 
-ui.run(port=8082)
+
+ui.query('body').classes('bg-gradient-to-t from-blue-600 to-blue-300')
+
+ui.run()
+# Run the UI
+ui.run(port=8080)  # Change the port as needed
