@@ -25,6 +25,8 @@ I implemented the application in Python using the `ffmpeg` library to handle the
 To run the application, you can use the following command:
 
 ```bash
-python main.py
+source .venv/bin/activate
+pip3 install nicegui
+python3 main.py
 ```
 
